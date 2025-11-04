@@ -46,13 +46,13 @@ grid: List[List[Human]] = [[Human(INFECTION_CHANCE) for __ in range(SIZE)] for _
 current_time = 0
 total_infected = 0
 
-grid[1][1].infected_until = INFECTION_DURATION + 1
+grid[randint(0,SIZE-1)][randint(0,SIZE-1)].infected_until = INFECTION_DURATION + 1
 print()
 
 fig, ax = plt.subplots()
 cmap = ListedColormap(["green", "red"])
 im = ax.imshow([[0]], cmap=cmap, vmin=0, vmax=2)
-
+text = fig.text(0.2, 0.9, "Current time: 0\nTotal infected: 0")
 plt.axis('off')
 plt.ion()
 plt.show()
@@ -71,9 +71,9 @@ try:
                 if grid[y][x].infected_until >= current_time:
                     total_infected += 1
 
-        print(f"\rCurrent time: {current_time}  |  Total infected: {total_infected}    ", end="")
         n_grid = [[int(human) for human in column] for column in grid]
         im.set_data(n_grid)
+        text.set_text(f"Current time: {current_time}\nTotal infected: {total_infected}")
         plt.pause(TIME_DURATION)
 except KeyboardInterrupt:
     exit()
