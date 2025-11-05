@@ -7,15 +7,21 @@ class Human:
     """
     'infection_chance' is invert of the probability, for example if infection probability is 1% then infection_chance = 100
     """
-    def __init__(self, infection_chance=100):
+    def __init__(self, infection_chance: int = 100, death_chance: int = 100):
         self.infected_until = 0
         self.immune_until = 0
+        self.dead = False
         self.infection_chance = infection_chance
+        self.death_chance = death_chance
 
     def infect(self, current_time, infection_duration, immunity_duration):
+        if self.dead:
+            return
         if self.immune_until < current_time and self.immune_until != -1 and randint(1, self.infection_chance) == 1:
             self.infected_until = current_time + infection_duration
             self.immune_until = current_time + infection_duration + immunity_duration
+            if self.death_chance > 0 and randint(1, self.death_chance) == 1:
+                self.dead = True
 
     @classmethod
     def infect_neighbours(cls, x, y, current_time, infection_duration, immunity_duration):
@@ -29,20 +35,28 @@ class Human:
             grid[y][x+1].infect(current_time, infection_duration, immunity_duration)
 
     def step(self, x, y, current_time, infection_duration, immunity_duration):
+        if self.dead:
+            return
         if self.infected_until >= current_time and self.infected_until != current_time + infection_duration:
             Human.infect_neighbours(x, y, current_time, infection_duration, immunity_duration)
 
     def __int__(self):
-        return int(self.infected_until >= current_time)
+        return int(self.infected_until >= current_time) if not self.dead else 2
 
 
 SIZE = int(input("Grid size: "))
 INFECTION_DURATION = int(input("Infection duration: "))
 IMMUNITY_DURATION = int(input("Immunity duration: "))
 INFECTION_CHANCE = int(input("Infection probability: 1/"))
+_DEATH_CHANCE = input("Death probability (Press Enter to skip): 1/")
 TIME_DURATION = float(input("1 Unit of time (in seconds): "))
 
-grid: List[List[Human]] = [[Human(INFECTION_CHANCE) for __ in range(SIZE)] for _ in range(SIZE)]
+if len(_DEATH_CHANCE) == 0:
+    DEATH_CHANCE = 0
+else:
+    DEATH_CHANCE = int(_DEATH_CHANCE)
+
+grid: List[List[Human]] = [[Human(INFECTION_CHANCE, DEATH_CHANCE) for __ in range(SIZE)] for _ in range(SIZE)]
 current_time = 0
 total_infected = 0
 
@@ -50,9 +64,9 @@ grid[randint(0,SIZE-1)][randint(0,SIZE-1)].infected_until = INFECTION_DURATION +
 print()
 
 fig, ax = plt.subplots()
-cmap = ListedColormap(["green", "red"])
+cmap = ListedColormap(["green", "red", "black"])
 im = ax.imshow([[0]], cmap=cmap, vmin=0, vmax=2)
-text = fig.text(0.2, 0.9, "Current time: 0\nTotal infected: 0")
+text = fig.text(0.02, 0.9, "Current time: 0\nTotal infected: 0")
 plt.axis('off')
 plt.ion()
 plt.show()
@@ -66,14 +80,17 @@ try:
                 grid[y][x].step(x, y, current_time, INFECTION_DURATION, IMMUNITY_DURATION)
 
         total_infected = 0
+        dead = 0
         for x in range(SIZE):
             for y in range(SIZE):
-                if grid[y][x].infected_until >= current_time:
+                if grid[y][x].dead:
+                    dead += 1
+                elif grid[y][x].infected_until >= current_time:
                     total_infected += 1
 
         n_grid = [[int(human) for human in column] for column in grid]
         im.set_data(n_grid)
-        text.set_text(f"Current time: {current_time}\nTotal infected: {total_infected}")
+        text.set_text(f"Current time: {current_time} | Infected: {total_infected} | Dead: {dead} | Alive-uninfected: {SIZE*SIZE-total_infected-dead}")
         plt.pause(TIME_DURATION)
 except KeyboardInterrupt:
     exit()
