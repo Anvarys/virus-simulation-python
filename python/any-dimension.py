@@ -104,6 +104,6 @@ try:
             elif value.infected_until >= current_time:
                 total_infected += 1
         time.sleep(TIME_DURATION)
-        print(f"\rCurrent time: {current_time} | Infected: {total_infected} | Dead: {dead} | Alive: {SIZE**DIMENSIONS-dead} | Alive-not-infected: {SIZE**DIMENSIONS-total_infected-dead}", end="")
+        print(f"\rCurrent time: {current_time} | Infected: {total_infected} | Dead: {dead} | Alive: {SIZE**DIMENSIONS-dead} | Alive-not-infected: {SIZE**DIMENSIONS-total_infected-dead}              ", end="")
 except KeyboardInterrupt:
-    exit()
+    pass

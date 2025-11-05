@@ -18,5 +18,5 @@ poetry install
 
 #### 2. Running a simulation
 ```
-poetry run python python/2d.py
+poetry run python python/choose.py
 ```
