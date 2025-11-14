@@ -11,13 +11,17 @@ Unix based OS (Linux, macOS, etc.): `pip3 install poetry`
 ```commandline
 git clone https://github.com/Anvarys/virus-simulation/
 cd virus-simulation
-poetry install
+poetry install --no-root
 ```
 
 #### 2. Running a simulation
 ```
 poetry run python python/choose.py
 ```
+
+- Green: Healthy
+- Red: Infected
+- Black: Dead
 
 ---
 
