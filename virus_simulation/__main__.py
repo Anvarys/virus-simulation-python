@@ -1,4 +1,6 @@
 import runpy
+import os
+from virus_simulation import __path__ as pck_path
 
 options = {
     0: {"desc":"2D simulation with matplotlib 2d visualisation", "filename":"2d.py"},
@@ -25,6 +27,6 @@ while True:
     if choice == 3:
         exit()
 
-    runpy.run_path(f"python/{options[choice]["filename"]}")
+    runpy.run_path(os.path.join(pck_path[0],options[choice]["filename"]))
 
     print("\n"*20)
